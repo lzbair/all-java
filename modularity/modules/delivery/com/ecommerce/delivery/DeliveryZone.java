@@ -1,5 +1,4 @@
 package com.ecommerce.delivery;
-import com.ecommerce.address.Address;
 
 public class DeliveryZone implements Comparable<DeliveryZone>{
 	
