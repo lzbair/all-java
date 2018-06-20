@@ -8,7 +8,7 @@ import com.service.toolkit.Sort;
 
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.concurrent.Executors;
+import java.util.Scanner;
 
 
 public class Shop {
@@ -31,6 +31,20 @@ public class Shop {
         sendNotification(zones);
 
         join("com.toolkit.monitor.Aspect", "after");
+
+
+        exit();
+
+    }
+
+    private void exit() {
+        Scanner in = new Scanner(System.in);
+        System.out.println("Press q to exit !");
+        while (true) {
+            if (in.nextLine().equalsIgnoreCase("q")) {
+                break;
+            }
+        }
     }
 
     private void join(String proxy, String stage) throws Exception {
@@ -42,7 +56,6 @@ public class Shop {
 
     private void sendNotification(List<DeliveryZone> zones) {
         Notification notification = new Notification("Delivery", zones);
-        Runnable task = notificationController.doNotify(notification);
-        Executors.newSingleThreadExecutor().submit(task);
+        notificationController.doNotify(notification);
     }
 } 

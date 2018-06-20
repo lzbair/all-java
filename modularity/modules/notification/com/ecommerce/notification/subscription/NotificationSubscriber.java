@@ -2,31 +2,17 @@ package com.ecommerce.notification.subscription;
 
 import com.ecommerce.notification.controller.Notification;
 
-import java.util.concurrent.Flow;
+import java.util.function.Consumer;
 
-public class NotificationSubscriber implements Flow.Subscriber<Notification> {
+public class NotificationSubscriber implements Consumer<Notification> {
+
     @Override
-    public void onSubscribe(Flow.Subscription subscription) {
+    public void accept(Notification notification) {
         try {
-            Thread.sleep(5000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        subscription.request(100);
-    }
-
-    @Override
-    public void onNext(Notification notification) {
         System.out.println(getClass().getName() + ": New notification pushed: " + notification);
-    }
-
-    @Override
-    public void onError(Throwable throwable) {
-        System.out.println(getClass().getName() + ": Error occurred during push notification: " + throwable.getMessage());
-    }
-
-    @Override
-    public void onComplete() {
-        //
     }
 }
