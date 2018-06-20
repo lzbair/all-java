@@ -1,28 +1,48 @@
 package com.ecommerce;
+
 import com.ecommerce.delivery.Delivery;
 import com.ecommerce.delivery.DeliveryZone;
+import com.ecommerce.notification.controller.Notification;
+import com.ecommerce.notification.controller.NotificationController;
+import com.service.toolkit.Sort;
+
 import java.lang.reflect.Method;
 import java.util.List;
-import com.service.toolkit.Sort;
+import java.util.concurrent.Executors;
 
 
 public class Shop {
-	public static void main(String... args) throws Exception{
-		join("com.toolkit.monitor.Aspect", "before");
 
-		final Delivery delivery = new Delivery();
-		System.out.println("Delivery says: " + delivery.greet());
-		System.out.println("Adderess says: " + delivery.address());
-		List<DeliveryZone> zones = Sort.lookup().<DeliveryZone>sort(delivery.zones());
-		System.out.println("Sorted delivery zones: " + zones);
-		
-		join("com.toolkit.monitor.Aspect", "after");
-	}
-	
-	private static void join(String proxy, String stage) throws Exception{
-		Class aspect = Class.forName(proxy);
-		Method m = aspect.getDeclaredMethod(stage, String.class);
-		m.setAccessible(true);
-		m.invoke(null, "Shopping ...");
-	}
+    private final NotificationController notificationController = new NotificationController();
+
+    public static void main(String... args) throws Exception {
+        new Shop().run();
+    }
+
+    public void run() throws Exception {
+        join("com.toolkit.monitor.Aspect", "before");
+
+        final Delivery delivery = new Delivery();
+        System.out.println("Delivery says: " + delivery.greet());
+        System.out.println("Adderess says: " + delivery.address());
+        List<DeliveryZone> zones = Sort.lookup().<DeliveryZone>sort(delivery.zones());
+        System.out.println("Sorted delivery zones: " + zones);
+
+        sendNotification(zones);
+
+        join("com.toolkit.monitor.Aspect", "after");
+    }
+
+    private void join(String proxy, String stage) throws Exception {
+        Class aspect = Class.forName(proxy);
+        Method m = aspect.getDeclaredMethod(stage, String.class);
+        m.setAccessible(true);
+        m.invoke(null, "Shopping ...");
+    }
+
+    private void sendNotification(List<DeliveryZone> zones) {
+        Notification notification = new Notification("Delivery", zones);
+        Runnable task = notificationController.doNotify(notification);
+        Executors.newSingleThreadExecutor().submit(task);
+    }
 } 
